@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { toast } from 'react-toastify';
 import {
   SearchbarHeader,
   SearchForm,
@@ -12,17 +13,18 @@ class Searchbar extends Component {
     searchbar: '',
   };
 
-  submit = e => {
-    e.preventDefault();
-    this.props.submit(this.state.searchbar);
-    this.reset();
-  };
   inputChange = e => {
     const { name, value } = e.currentTarget;
     this.setState({ [name]: value });
   };
 
-  reset = () => {
+  submit = e => {
+    e.preventDefault();
+    if (!this.state.searchbar.trim()) {
+      toast.error('Please write the name of the picture ');
+      return;
+    }
+    this.props.onSubmit(this.state.searchbar);
     this.setState({ searchbar: '' });
   };
 
@@ -33,11 +35,10 @@ class Searchbar extends Component {
           <SearchButton type="submit">
             <SearchLable>Search</SearchLable>
           </SearchButton>
-
           <SearchInput
             type="text"
             autocomplete="off"
-            autofocus
+            autoFocus
             placeholder="Search images and photos"
             name="searchbar"
             value={this.state.searchbar}
