@@ -3,12 +3,6 @@ import React, { Component } from 'react';
 import { Overlay, ModalForo } from './Modal.styled';
 
 class Modal extends Component {
-  static propTypes = {
-    largeImageURL: PropTypes.string,
-    tags: PropTypes.string,
-    onClick: PropTypes.func,
-  };
-
   componentDidMount() {
     window.addEventListener('keydown', this.cleanEventListener);
   }
@@ -37,4 +31,5 @@ export default Modal;
 Modal.propTypes = {
   largeImageURL: PropTypes.string,
   tags: PropTypes.string,
+  onClick: PropTypes.func,
 };

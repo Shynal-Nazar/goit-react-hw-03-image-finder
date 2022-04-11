@@ -57,7 +57,6 @@ export default class ImageGallery extends Component {
   };
 
   modalOpen = (moduleUrl, moduleAlt) => {
-    console.log('clic');
     this.setState({
       largeImageURL: moduleUrl,
       alt: moduleAlt,
