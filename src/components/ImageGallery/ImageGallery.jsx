@@ -9,6 +9,7 @@ import { ImageGalleryList } from './ImageGallery.styled';
 
 export default class ImageGallery extends Component {
   state = {
+    images: [],
     status: 'idle',
   };
 
@@ -16,6 +17,7 @@ export default class ImageGallery extends Component {
     const prevSearch = prevProps.searchbar.searchbar;
     const nextSearch = this.props.searchbar.searchbar;
     const page = 1;
+
     if (prevSearch !== nextSearch) {
       this.setState({ status: 'pending', page: 1 });
 
@@ -27,6 +29,7 @@ export default class ImageGallery extends Component {
           } else {
             this.setState({
               images: images.hits,
+              fetchLength: images.total,
               status: 'resolved',
               page: 1,
               searchbar: nextSearch,
@@ -98,7 +101,9 @@ export default class ImageGallery extends Component {
               );
             })}
           </ImageGalleryList>
-          <Button onClick={this.loadMore} />
+          {this.state.images.length !== this.state.fetchLength && (
+            <Button onClick={this.loadMore} />
+          )}
           {this.state.largeImageURL && (
             <Modal
               largeImageURL={this.state.largeImageURL}
