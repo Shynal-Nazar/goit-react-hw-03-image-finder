@@ -23,46 +23,53 @@ export class App extends Component {
     const prevSearch = PrevState.searchbar;
     const nextSearch = this.state.searchbar;
     const page = 1;
-
     if (prevSearch !== nextSearch) {
       this.setState({ status: 'pending', page: 1 });
-
-      Api.fatchImage(nextSearch, page)
-        .then(images => {
-          if (images.total === 0) {
-            toast.error('No any picture');
-            this.setState({ error: 'No any picture', status: 'rejected' });
-          } else {
-            this.setState({
-              images: images.hits,
-              fetchLength: images.total,
-              status: 'resolved',
-              page: 1,
-              searchbar: nextSearch,
-            });
-          }
-        })
-        .catch(error => this.setState({ error, status: 'rejected' }));
+      this.fatchImages(nextSearch, page, this.initImages, false);
     }
   }
 
   loadMore = () => {
     const page = this.state.page + 1;
+    this.fatchImages(this.state.searchbar, page, this.addImages, true);
+  };
 
-    Api.fatchImage(this.state.searchbar, page)
-      .then(images =>
-        this.setState(prevState => ({
-          images: [...prevState.images, ...images.hits],
-          page: prevState.page + 1,
-        }))
-      )
-      .then(() => {
-        window.scrollTo({
-          top: document.documentElement.scrollHeight,
-          behavior: 'smooth',
-        });
+  fatchImages = (nextSearch, page, callBackFunc, toscrol) => {
+    Api.fatchImage(nextSearch, page)
+      .then(images => {
+        callBackFunc(images, nextSearch);
       })
-      .catch(error => this.setState({ error }));
+      .then(() => {
+        if (toscrol) {
+          window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth',
+          });
+        }
+      })
+      .catch(error => this.setState({ error, status: 'rejected' }));
+  };
+
+  initImages = (images, nextSearch) => {
+    if (images.total === 0) {
+      toast.error('No any picture');
+      this.setState({ error: 'No any picture', status: 'rejected' });
+    } else {
+      this.setState({
+        images: images.hits,
+        fetchLength: images.total,
+        status: 'resolved',
+        page: 1,
+        searchbar: nextSearch,
+      });
+    }
+  };
+
+  addImages = images => {
+    this.setState(prevState => ({
+      images: [...prevState.images, ...images.hits],
+      page: prevState.page + 1,
+    }));
   };
 
   modalOpen = (moduleUrl, moduleAlt) => {
